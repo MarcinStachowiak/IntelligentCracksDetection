@@ -9,5 +9,6 @@
 7. Jeśli macie jakieś pomysły dodatkowe odnośnie przetwarzania to spróbujcie dodać swój opis AF i zaimplementować. Możemy też o tym porozmawiać.
 8. Dokumentacja dostępna jest na stronie Wiki.
 9. Komentarze w commitach piszemy po ang.
-** 10. Bezpośrednio przed rozpoczęciem pracy i w trakcie pracy dobrze jest zaciągać nową wersję z githuba, aby mieć zawsze najświeższy kod, który w przeciwnym razie może być ciężko zmergować **
+10. Bezpośrednio przed rozpoczęciem pracy i w trakcie pracy dobrze jest zaciągać nową wersję z githuba, aby mieć zawsze najświeższy kod, który w przeciwnym razie może być ciężko zmergować 
 11. Dla niektóych AF utworzyłem taski z testami. Dobrze byłoby napisać przynajmniej jeden test w celu sprawdzenia poprawności działania.
+12. Do repo nie należy wrzucać zdjęć oraz nic co wygereruje się w folderze target.
