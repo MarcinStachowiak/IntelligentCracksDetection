@@ -1,5 +1,6 @@
 import os
 import cv2
+import numpy as np
 
 
 class Service:
@@ -60,7 +61,36 @@ class Service:
         pass
 
     def split_crack_image_to_sensors(self, image_data, height):
-        pass
+        """
+        AF_SplitCrackImageToSensors
+        :param image_data: 2d array with an image
+        :param height: The height of small, splitted images
+        :return: 3d array with split image
+        """
+        img_height, img_width = image_data.shape
+        img_middle_height = img_height//2
+
+        # Finding first row from the bottom of image with any non-black pixels
+        img_down_first = None
+        for i in range(img_height, img_middle_height + height):
+            if np.any(image_data[i:] != 0):
+                img_down_first = i
+                break
+        if not img_down_first:
+            img_down_first = img_middle_height
+
+        # Finding first row from the middle of image with any non-black pixels
+        img_up_first = None
+        for i in range(img_middle_height, 0):
+            if np.any(image_data[i:] != 0):
+                img_up_first = i
+                break
+            if i == height:
+                img_up_first = i
+                break
+        if not img_up_first:
+            img_up_first = img_middle_height
+
 
     def save_images(self, data, prefix, path_to_target_folder):
         pass
