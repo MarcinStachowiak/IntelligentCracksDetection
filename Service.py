@@ -77,42 +77,48 @@ class Service:
         img_middle_height = img_height//2
 
         # Finding first row from the bottom of image with any non-black pixels
-        img_down_first = None
-        for i in range(img_height, img_middle_height + resulting_height):
+        img_upper_part_bottom = img_middle_height
+        for i in range(img_middle_height, img_height):
             if np.any(image_data[i:] != 0):
                 img_down_first = i
                 break
-        if not img_down_first:
-            img_down_first = img_height
 
         # Finding first row from the middle of image with any non-black pixels
-        img_up_first = None
-        for i in range(img_middle_height, img_middle_height - resulting_height):
+        img_bottom_part_top = img_middle_height
+        for i in range(img_middle_height,0,-1):
             if np.any(image_data[i:] != 0):
                 img_up_first = i
                 break
-        if not img_up_first:
-            img_up_first = img_middle_height
 
         # Splitting image
         split_images_data = []
-        height_begin = img_up_first - resulting_height
-        height_end = img_up_first
+        height_upper_part_begin = img_upper_part_bottom
+        height_upper_part_end = min(img_height,height_upper_part_begin+resulting_height)
         for i in range(resulting_images_count // 2):
             width_begin = i * resulting_width + (i+1) * buffer_width
             width_end = (i+1) * resulting_width + (i+1) * buffer_width
-            split_images_data.append(image_data[height_begin:height_end, width_begin:width_end])
-        height_begin = img_down_first - resulting_height
-        height_end = img_down_first
+            sensor_image = image_data[height_upper_part_begin:height_upper_part_end, width_begin:width_end]
+            sensor_image_form = np.zeros([resulting_height,resulting_width])
+            sensor_image_height=sensor_image.shape[0]
+            sensor_image_form[0:sensor_image_height,:]=sensor_image_form[0:sensor_image_height,:] + sensor_image
+            split_images_data.append(sensor_image_form.astype(np.uint8))
+
+        height_bottom_part_begin = max(0,img_bottom_part_top-resulting_height)
+        height_bottom_part_end = img_bottom_part_top
         for i in range(resulting_images_count // 2):
             width_begin = i * resulting_width + (i + 1) * buffer_width
             width_end = (i + 1) * resulting_width + (i + 1) * buffer_width
-            split_images_data.append(image_data[height_begin:height_end, width_begin:width_end])
+            sensor_image = image_data[height_bottom_part_begin:height_bottom_part_end, width_begin:width_end]
+            sensor_image_form = np.zeros([resulting_height,resulting_width])
+            sensor_image_height=sensor_image.shape[0]
+            sensor_image_form[0:sensor_image_height,:]=sensor_image_form[0:sensor_image_height,:] + sensor_image
+            split_images_data.append(sensor_image_form.astype(np.uint8))
+
         cv2.imshow("y", image_data)
         for i, img in enumerate(split_images_data):
             cv2.imshow("%d" % i, img)
         key = cv2.waitKey(0)
-        return np.dstack(split_images_data)
+        return np.array(split_images_data)
 
     def save_images(self, data, prefix, path_to_target_folder):
         pass
@@ -120,4 +126,4 @@ class Service:
     def save_simple_image(self, data, path, extension):
         pass
 
-Service.split_crack_image_to_sensors(Service.read_simple_image(r'C:\Users\KKONDRAT\Desktop\DSC\comp\sample_train_200x20_all\Crack Field\5_39_4813.png'), 210)
+Service.split_crack_image_to_sensors(Service.read_simple_image(r'C:\Users\Marcin\Downloads\comp\sample_train_200x20_all\Mill Anomaly\22_49_46262.png'), 210)
