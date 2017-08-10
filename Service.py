@@ -23,7 +23,8 @@ class Service:
                     props[key] = value
         self.properties = props
 
-    def read_simple_image(self, path_to_image):
+    @staticmethod
+    def read_simple_image(path_to_image):
         """
         AF_ReadSimpleImage
          :param path_to_image: Path to an image
@@ -60,11 +61,16 @@ class Service:
     def pre_process_image(self, split_images_data):
         pass
 
-    def split_crack_image_to_sensors(self, image_data, height):
+    @staticmethod
+    def split_crack_image_to_sensors(image_data, resulting_height, resulting_width=200, buffer_width=2,
+                                     resulting_images_count=18):
         """
         AF_SplitCrackImageToSensors
         :param image_data: 2d array with an image
-        :param height: The height of small, splitted images
+        :param resulting_height: The height of small, split images
+        :param resulting_width: The width of small, split images
+        :param buffer_width: Width of buffer columns separating each split image
+        :param resulting_images_count: Number of split images
         :return: 3d array with split image
         """
         img_height, img_width = image_data.shape
@@ -72,28 +78,46 @@ class Service:
 
         # Finding first row from the bottom of image with any non-black pixels
         img_down_first = None
-        for i in range(img_height, img_middle_height + height):
+        for i in range(img_height, img_middle_height + resulting_height):
             if np.any(image_data[i:] != 0):
                 img_down_first = i
                 break
         if not img_down_first:
-            img_down_first = img_middle_height
+            img_down_first = img_height
 
         # Finding first row from the middle of image with any non-black pixels
         img_up_first = None
-        for i in range(img_middle_height, 0):
+        for i in range(img_middle_height, img_middle_height - resulting_height):
             if np.any(image_data[i:] != 0):
-                img_up_first = i
-                break
-            if i == height:
                 img_up_first = i
                 break
         if not img_up_first:
             img_up_first = img_middle_height
 
+        # Splitting image
+        split_images_data = []
+        height_begin = img_up_first - resulting_height
+        height_end = img_up_first
+        for i in range(resulting_images_count // 2):
+            width_begin = i * resulting_width + (i+1) * buffer_width
+            width_end = (i+1) * resulting_width + (i+1) * buffer_width
+            split_images_data.append(image_data[height_begin:height_end, width_begin:width_end])
+        height_begin = img_down_first - resulting_height
+        height_end = img_down_first
+        for i in range(resulting_images_count // 2):
+            width_begin = i * resulting_width + (i + 1) * buffer_width
+            width_end = (i + 1) * resulting_width + (i + 1) * buffer_width
+            split_images_data.append(image_data[height_begin:height_end, width_begin:width_end])
+        cv2.imshow("y", image_data)
+        for i, img in enumerate(split_images_data):
+            cv2.imshow("%d" % i, img)
+        key = cv2.waitKey(0)
+        return np.dstack(split_images_data)
 
     def save_images(self, data, prefix, path_to_target_folder):
         pass
 
     def save_simple_image(self, data, path, extension):
         pass
+
+Service.split_crack_image_to_sensors(Service.read_simple_image(r'C:\Users\KKONDRAT\Desktop\DSC\comp\sample_train_200x20_all\Crack Field\5_39_4813.png'), 210)
