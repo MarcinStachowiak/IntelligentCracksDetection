@@ -42,5 +42,4 @@ class ImportProcessor:
             raise NotADirectoryError("Path does not exist or is not a directory.")
 
 
-ImportProcessor.read_split_and_pre_process_images_for_class(
-    "C:\\Users\\Marcin\\Downloads\\comp\\sample_train_200x20_all\\Crack Field", True)
+ImportProcessor.read_split_and_pre_process_images_for_class("path_to_folder\\Crack Field", True)
