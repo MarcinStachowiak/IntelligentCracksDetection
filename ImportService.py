@@ -11,6 +11,8 @@ class ImportService:
          :return: 2d array with an image
         """
         if os.path.isfile(path_to_image):
-            return cv2.imread(path_to_image, 0)
+            result = cv2.imread(path_to_image, 0)
+            print("Reading %s image" % (path_to_image))
+            return (result)
         else:
-            raise FileNotFoundError("Path does not exist or is not a file.")
+            raise FileNotFoundError("Path %s does not exist or is not a file." % (path_to_image))
